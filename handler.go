@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -32,7 +33,7 @@ func getDocuments(w http.ResponseWriter, r *http.Request) {
 	}
 	s, err := json.Marshal(p) //pは構造体、sはjson
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
 	w.Write(s)
 }
@@ -49,7 +50,7 @@ func postDocument(w http.ResponseWriter, r *http.Request) {
 	length, _ = r.Body.Read(body)
 	var jsonBody Article
 	if err := json.Unmarshal(body[:length], &jsonBody); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	if jsonBody == p {
 		s, _ := json.Marshal(jsonBody)
