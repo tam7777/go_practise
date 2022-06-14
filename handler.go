@@ -31,11 +31,10 @@ func getDocuments(w http.ResponseWriter, r *http.Request) {
 	p := Article{
 		Title: "title 1",
 	}
-	s, err := json.Marshal(p) //pは構造体、sはjson
+	err := json.NewEncoder(w).Encode(p) //pは構造体、sはjson, json.Marshal(p)でもいいけどAPIレスポンスの場合はjson.NewEncode(p)
 	if err != nil {
 		log.Fatal(err)
 	}
-	w.Write(s)
 }
 
 func postDocument(w http.ResponseWriter, r *http.Request) {
@@ -52,10 +51,13 @@ func postDocument(w http.ResponseWriter, r *http.Request) {
 	if err := json.Unmarshal(body[:length], &jsonBody); err != nil {
 		log.Fatal(err)
 	}
+
 	if jsonBody == p {
-		s, _ := json.Marshal(jsonBody)
-		w.Write(s)
+		err := json.NewEncoder(w).Encode(jsonBody)
+		if err != nil {
+			log.Fatal(err)
+		}
 	} else {
-		fmt.Println("error")
+		fmt.Println("Did not get title:title 1")
 	}
 }
