@@ -26,7 +26,7 @@ func getDocuments(w http.ResponseWriter, r *http.Request) {
 	// ここにデータベースから情報を取得して返すコードを書く
 	var p Article
 	p.Title = "title 1"
-	err := json.NewEncoder(w).Encode(p) //pは構造体、sはjson, json.Marshal(p)でもいいけどAPIレスポンスの場合はjson.NewEncode(p)
+	err := json.NewEncoder(w).Encode(p) //pは構造体、sはjson, json.Marshal(p)でもいいけどAPIレスポンスの場合はjson.NewEncode(p).Marhsal -> string Encoder -> steam
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,12 +41,19 @@ func postDocument(w http.ResponseWriter, r *http.Request) {
 	length, _ := strconv.Atoi(r.Header.Get("Content-Length"))
 	body := make([]byte, length)
 	length, _ = r.Body.Read(body)
+
 	var jsonBody Article
 
-	if err := json.Unmarshal(body[:length], &jsonBody); err != nil {
+	err := json.Unmarshal(body[:length], &jsonBody)
+	if err == nil {
+		validation(jsonBody, p, w)
+	} else {
 		log.Fatal(err)
 	}
 
+}
+
+func validation(jsonBody, p Article, w http.ResponseWriter) {
 	if jsonBody == p {
 		err := json.NewEncoder(w).Encode(jsonBody)
 		if err != nil {
@@ -56,13 +63,3 @@ func postDocument(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Did not get title:title 1")
 	}
 }
-
-/*
-func validation(jsonBody, p Article) error {
-	if jsonBody == p {
-
-	} else {
-		fmt.Println("Did not get title:title 1")
-	}
-}
-*/
