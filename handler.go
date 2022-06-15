@@ -21,10 +21,6 @@ func Document(w http.ResponseWriter, r *http.Request) {
 
 }
 
-type Article struct {
-	Title string `json:"title"`
-}
-
 func getDocuments(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	// ここにデータベースから情報を取得して返すコードを書く
@@ -46,6 +42,7 @@ func postDocument(w http.ResponseWriter, r *http.Request) {
 	body := make([]byte, length)
 	length, _ = r.Body.Read(body)
 	var jsonBody Article
+
 	if err := json.Unmarshal(body[:length], &jsonBody); err != nil {
 		log.Fatal(err)
 	}
@@ -63,10 +60,7 @@ func postDocument(w http.ResponseWriter, r *http.Request) {
 /*
 func validation(jsonBody, p Article) error {
 	if jsonBody == p {
-		err := json.NewEncoder(w).Encode(jsonBody)
-		if err != nil {
-			log.Fatal(err)
-		}
+
 	} else {
 		fmt.Println("Did not get title:title 1")
 	}
