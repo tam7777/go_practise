@@ -28,9 +28,8 @@ type Article struct {
 func getDocuments(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	// ここにデータベースから情報を取得して返すコードを書く
-	p := Article{
-		Title: "title 1",
-	}
+	var p Article
+	p.Title = "title 1"
 	err := json.NewEncoder(w).Encode(p) //pは構造体、sはjson, json.Marshal(p)でもいいけどAPIレスポンスの場合はjson.NewEncode(p)
 	if err != nil {
 		log.Fatal(err)
@@ -40,9 +39,8 @@ func getDocuments(w http.ResponseWriter, r *http.Request) {
 func postDocument(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	// ここにデータベースに情報を登録するコードを書く
-	p := Article{
-		Title: "title 1",
-	}
+	var p Article
+	p.Title = "title 1"
 
 	length, _ := strconv.Atoi(r.Header.Get("Content-Length"))
 	body := make([]byte, length)
@@ -61,3 +59,16 @@ func postDocument(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Did not get title:title 1")
 	}
 }
+
+/*
+func validation(jsonBody, p Article) error {
+	if jsonBody == p {
+		err := json.NewEncoder(w).Encode(jsonBody)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		fmt.Println("Did not get title:title 1")
+	}
+}
+*/
