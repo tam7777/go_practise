@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -35,31 +35,30 @@ func getDocuments(w http.ResponseWriter, r *http.Request) {
 func postDocument(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	// ここにデータベースに情報を登録するコードを書く
-	var p Article
-	p.Title = "title 1"
-
 	length, _ := strconv.Atoi(r.Header.Get("Content-Length"))
 	body := make([]byte, length)
-	length, _ = r.Body.Read(body)
+	length, _ = r.Body.Read(body) //body 書く
 
-	var jsonBody Article
-
-	err := json.Unmarshal(body[:length], &jsonBody)
-	if err == nil {
-		validation(jsonBody, p, w)
-	} else {
+	var jsonBody Article //受信した型の宣言
+	if err := json.Unmarshal(body[:length], &jsonBody); err != nil {
 		log.Fatal(err)
-	}
+	} //jsonを構造体に変換
 
+	var p Article
+	p.Title = "title 1" //structにtitle 1を入れる
+	if err := validation(jsonBody, p); err != nil {
+		log.Fatal(err)
+	} //受信した型と既にある型が同じか判別
+
+	err := json.NewEncoder(w).Encode(jsonBody)
+	if err != nil {
+		log.Fatal(err)
+	} //構造体をjsonに変換
 }
 
-func validation(jsonBody, p Article, w http.ResponseWriter) {
-	if jsonBody == p {
-		err := json.NewEncoder(w).Encode(jsonBody)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		fmt.Println("Did not get title:title 1")
+func validation(jsonBody, p Article) error {
+	if jsonBody != p {
+		return errors.New("Error: %s") //errorのfuncはerrors.New()を使う。中にstring必要
 	}
+	return nil
 }
